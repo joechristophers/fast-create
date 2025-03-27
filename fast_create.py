@@ -2,45 +2,24 @@
 
 import os
 import sys
+import shutil
 
 def create_project_structure(project_name):
-    base_dirs = [
-        "models",
-        "schemas",
-        "auth",
-        "database",
-        "security",
-        "routers",
-        "utilities"
-    ]
-    auth_files = ["login.py", "signup.py", "oauth2.py", "auth_token.py"]
-    security_files = ["hashing.py"]
-    database_files = ["database.py"]
-    middleware_file = "middleware.py"
-    app_file = "app.py"
+    
+    temp_dir = 'temp'
 
     os.makedirs(project_name, exist_ok=True)
+    for item in os.listdir(temp_dir):
+        source = os.path.join(temp_dir, item)
+        destination = os.path.join(project_name, item)
 
-    for directory in base_dirs:
-        os.makedirs(os.path.join(project_name, directory), exist_ok=True)
+        if os.path.isdir(source):
+            shutil.copytree(source, destination, dirs_exist_ok=True)
+        else:
+            shutil.copy2(source, destination)
 
-    # Creating auth files
-    for file in auth_files:
-        open(os.path.join(project_name, "auth", file), "w").close()
+    shutil.copy(project_name, )
 
-    # Creating security files
-    for file in security_files:
-        open(os.path.join(project_name, "security", file), "w").close()
-
-    # Creating database files
-    for file in database_files:
-        open(os.path.join(project_name, "database", file), "w").close()
-
-    # Creating middleware file
-    open(os.path.join(project_name, middleware_file), "w").close()
-
-    # Creating main app file
-    open(os.path.join(project_name, app_file), "w").close()
 
     print(f"FastAPI project '{project_name}' created successfully!")
 
