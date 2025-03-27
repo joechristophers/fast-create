@@ -3,19 +3,20 @@ from fastapi import Depends, status, Response, HTTPException
 from sqlmodel import Session, select
  
 from hashing import Hash
-from tokenSchema import Token, TokenData, RefreshToken
+from .tokenSchema import Token, TokenData, RefreshToken
 from fastapi.security import OAuth2PasswordRequestForm
 import token
 from models.UserModel import User
 from datetime import datetime, timezone, timedelta
 from jose import JWTError, jwt
 from database import get_db
-import secrets
-from fastapi_mail import FastMail, MessageSchema
+import secrets 
+from fastapi_mail import FastMail, MessageSchema 
 from pydantic import EmailStr
 router = APIRouter()
-import auth_token
-
+from .import auth_token
+from utilities.mail import conf 
+from sqlalchemy.sql import or_
 verification_code = secrets.token_hex(8)
 
 
@@ -30,7 +31,7 @@ expire_time = datetime.utcnow() + ACCESS_TOKEN_EXPIRES_IN
 
 @router.get('/auth/refresh/{token}')
 def refresh_token(token: str, db: Session= Depends(get_db)):
-    try:
+    try: 
         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
         username = payload.get('sub')
         if username is None:
@@ -56,6 +57,18 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     expires_at = datetime.now(timezone.utc) + ACCESS_TOKEN_EXPIRES_IN
     return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer", expires_at=expires_at)
 
+
+
+@router.post('/auth/login')
+def login(request: OAuth2PasswordRequestForm = Depends(), db:Session =Depends(get_db)):
+        user = db.exec(select(User).where(User.username == request.username)).first()
+        if not user or not Hash.verify(user.password, request.password):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        access_token = create_access_token({"sub": user.username}, expires_delta=ACCESS_TOKEN_EXPIRES_IN)
+        refresh_token = refresh_access_token({"sub": user.username}, expires_delta=REFRESH_TOKEN_EXPIRES_IN)
+        expires_at = datetime.now(timezone.utc) + ACCESS_TOKEN_EXPIRES_IN
+
+        return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer", expires_at=expires_at)
 
 
 
@@ -238,13 +251,33 @@ def create_user(email: str, username: str, first_name: str,  last_name: str, pas
         user.first_name = first_name
         user.last_name = last_name
         user.profile_photo = "https://placehold.co/500x500/png"
-        user.password = Hash.bcrypt(password)  # Assuming `Hash.bcrypt` is a utility function
+        user.password = Hash.bcrypt(password)  
         user.phone_number = phone_number
         db.commit()
         
     else:
         raise HTTPException(status_code=404, detail="Sorry this user was not found")
     return user
+
+ 
+
+
+@router.put('/auth/complete-signup/new')
+def create_user_new(email: str, username: str, password: str, db: Session=Depends(get_db)):
+    user = db.exec(select(User).where(or_(User.email == email, User.username == username))).first()
+
+    if user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='sorry please use another email or username')
+    username = username.lower()
+    hashed_password = Hash.bcrypt(password)
+    
+    new_user = User(username = username, email=email, password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+        
+    return new_user
+
 
 
 

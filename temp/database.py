@@ -12,12 +12,12 @@ logging.basicConfig()
 logging.getLogger('sqlalchemy.engine').setLevel(logging.WARNING) 
 
 load_dotenv("/app/.env")
-
-database_ur = os.environ.get("POSTGRES_KEY")
+ 
+database_ur = os.environ.get("DATABASE_URL") 
 if not database_ur:
-    raise ValueError("POSTGRES_KEY environment variable is not set")
+    raise ValueError("DATABASE_URL environment variable is not set")
 echo=True
-
+ 
 
 engine = create_engine(database_ur,
     pool_size=90,  # Increase pool size

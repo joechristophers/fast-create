@@ -11,7 +11,10 @@ class User(SQLModel, table=True):
     first_name: Optional[str] = Field(default=None) 
     last_name: Optional[str] = Field(default=None)
     age: Optional[int] = Field(default=None)
+    profile_photo: Optional[str] = None
     email: str = Field(index= True, unique=True)
     password: Optional[str] = Field(default=None)
     bio: Optional[str] = None 
+    verification_code: Optional[str] = Field(default=None)
+    code_expiry: Optional[datetime] = Field(default=None)
     

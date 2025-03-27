@@ -4,6 +4,10 @@ from routers import *
 from securities import authentication
 from models .UserModel import SQLModel
 import os
+from database import engine, get_db
+from fastapi import Depends
+from routers import profile
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -15,3 +19,4 @@ SQLModel.metadata.create_all(bind=engine)
 
 
 app.include_router(authentication.router, tags=['Authentication'])
+app.include_router(profile.router, tags=['Profile'])

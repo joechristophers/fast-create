@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from pydantic import BaseModel
 import models
-from auth_token import verify_token
+from .auth_token import verify_token
 from sqlalchemy.orm import Session
 from database import get_db
 from models.UserModel import User
