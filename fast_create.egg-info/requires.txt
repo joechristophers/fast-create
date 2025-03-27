@@ -1,4 +1,6 @@
 fastapi[all]
+uvicorn
+python-dotenv
 psycopg2
 sqlmodel
 fastapi_mail

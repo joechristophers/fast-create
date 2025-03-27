@@ -1,2 +1,2 @@
 [console_scripts]
-fast-create = fast_create:main
+create-fastapi = fast_create.cli:main
