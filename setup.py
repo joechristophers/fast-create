@@ -7,7 +7,7 @@ setup(
     install_requires=['fastapi[all]', 'psycopg2', 'sqlmodel', 'fastapi_mail', 'pydantic', "python-jose[cryptography]",'oauth2', 'passlib', 'sqlalchemy'],
     entry_points={
         "console_scripts": [
-            "create-fastapi=fast_create:main",
+            "fast-create=fast_create:main",
         ],
     },
 )
