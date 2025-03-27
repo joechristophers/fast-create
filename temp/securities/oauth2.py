@@ -7,7 +7,7 @@ import models
 from .auth_token import verify_token
 from sqlalchemy.orm import Session
 from database import get_db
-from models.UserModel import User
+from models.UserModel import User 
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

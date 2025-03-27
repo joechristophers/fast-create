@@ -261,7 +261,7 @@ def create_user(email: str, username: str, first_name: str,  last_name: str, pas
 
  
 
-
+ 
 @router.put('/auth/complete-signup/new')
 def create_user_new(email: str, username: str, password: str, db: Session=Depends(get_db)):
     user = db.exec(select(User).where(or_(User.email == email, User.username == username))).first()
