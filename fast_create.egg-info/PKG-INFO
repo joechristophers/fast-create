@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: fast-create
-Version: 0.1.0
+Version: 0.1.1
 Summary: A CLI tool to quickly generate FastAPI project structures
 Author-email: Joseph Chukwuma Christopher <joechristophersc@email.com>
 License: MIT
