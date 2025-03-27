@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="fast-create",
-    version="0.1.1",
+    version="0.1.3",
     py_modules=["fast_create"],
     install_requires=[
     'fastapi[all]', 'uvicorn', 'python-dotenv', 'psycopg2-binary', 

@@ -1,7 +1,7 @@
 fastapi[all]
 uvicorn
 python-dotenv
-psycopg2
+psycopg2-binary
 sqlmodel
 fastapi_mail
 pydantic
