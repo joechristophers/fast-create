@@ -1,8 +1,9 @@
 fastapi[all]
+psycopg2
 sqlmodel
 fastapi_mail
 pydantic
-jose
+python-jose[cryptography]
 oauth2
 passlib
 sqlalchemy

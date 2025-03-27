@@ -2,10 +2,11 @@ Metadata-Version: 2.2
 Name: fast-create
 Version: 0.1
 Requires-Dist: fastapi[all]
+Requires-Dist: psycopg2
 Requires-Dist: sqlmodel
 Requires-Dist: fastapi_mail
 Requires-Dist: pydantic
-Requires-Dist: jose
+Requires-Dist: python-jose[cryptography]
 Requires-Dist: oauth2
 Requires-Dist: passlib
 Requires-Dist: sqlalchemy
