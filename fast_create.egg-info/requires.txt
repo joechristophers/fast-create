@@ -1,0 +1,8 @@
+fastapi
+sqlmodel
+fastapi_mail
+pydantic
+jose
+oauth2
+passlib
+sqlalchemy
