@@ -1,7 +1,9 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app import app
-
+from starlette.middleware.base import BaseHTTPMiddleware
+from database import get_db
+from fastapi import Depends
 
 origins = [
     "http://localhost:3000",  
@@ -25,3 +27,5 @@ async def preflight(full_path: str):
             "Access-Control-Allow-Headers": "*",
         },
     )
+
+

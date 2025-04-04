@@ -33,13 +33,13 @@ expire_time = datetime.utcnow() + ACCESS_TOKEN_EXPIRES_IN
 def refresh_token(token: str, db: Session= Depends(get_db)):
     try: 
         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-        username = payload.get('sub')
-        if username is None:
+        user_id = payload.get('sub')
+        if user_id is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="inavlid refresh token provided")
-        user = db.exec(select(User).where(User.username == username)).first()
+        user = db.exec(select(User).where(User.id == user_id)).first()
         if user is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-        new_access_token = auth_token.create_access_token(data={'sub': user.username}, expires_delta=ACCESS_TOKEN_EXPIRES_IN)
+        new_access_token = auth_token.create_access_token(data={'sub': str(user.id)}, expires_delta=ACCESS_TOKEN_EXPIRES_IN)
 
         return RefreshToken(
             access_token=new_access_token, refresh_token=token, token_type='bearer', TimeStamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -48,24 +48,43 @@ def refresh_token(token: str, db: Session= Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='invalid refresh token')
         
 @router.post('/login')
-def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(response: Response,request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.exec(select(User).where(User.username == request.username)).first()
     if not user or not Hash.verify(user.password, request.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-    access_token = create_access_token({"sub": user.username}, expires_delta=ACCESS_TOKEN_EXPIRES_IN)
-    refresh_token = refresh_access_token({"sub": user.username}, expires_delta=REFRESH_TOKEN_EXPIRES_IN)
+    access_token = create_access_token({"sub": str(user.id)}, expires_delta=ACCESS_TOKEN_EXPIRES_IN)
+    refresh_token = refresh_access_token({"sub": str(user.id)}, expires_delta=REFRESH_TOKEN_EXPIRES_IN)
     expires_at = datetime.now(timezone.utc) + ACCESS_TOKEN_EXPIRES_IN
+    
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="Lax"
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="Lax"
+    )
     return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer", expires_at=expires_at)
 
-
+@router.post("/logout")
+def logout(response: Response):
+    response.set_cookie(key="access_token", value="", httponly=True, expires=0)
+    response.set_cookie(key="refresh_token", value="", httponly=True, expires=0)
+    return {"message": "Logged out successfully"}
 
 @router.post('/auth/login')
 def login(request: OAuth2PasswordRequestForm = Depends(), db:Session =Depends(get_db)):
         user = db.exec(select(User).where(User.username == request.username)).first()
         if not user or not Hash.verify(user.password, request.password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
-        access_token = create_access_token({"sub": user.username}, expires_delta=ACCESS_TOKEN_EXPIRES_IN)
-        refresh_token = refresh_access_token({"sub": user.username}, expires_delta=REFRESH_TOKEN_EXPIRES_IN)
+        access_token = create_access_token({"sub": user.id}, expires_delta=ACCESS_TOKEN_EXPIRES_IN)
+        refresh_token = refresh_access_token({"sub": user.id}, expires_delta=REFRESH_TOKEN_EXPIRES_IN)
         expires_at = datetime.now(timezone.utc) + ACCESS_TOKEN_EXPIRES_IN
 
         return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer", expires_at=expires_at)

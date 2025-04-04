@@ -24,6 +24,7 @@ credentials_exception = HTTPException(
 
 class TokenData(BaseModel):
     username: str | None = None
+    user_id: str | None = None
 
 
 
@@ -72,10 +73,10 @@ def verify_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         print(f"Token payload: {payload}")
-        username: str = payload.get("sub")
-        if username is None:
+        user_id: str = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
-        return TokenData(username=username)
+        return TokenData(user_id=user_id)
     except JWTError as e:
         print(f"Token verification error: {str(e)}")
         raise credentials_exception
