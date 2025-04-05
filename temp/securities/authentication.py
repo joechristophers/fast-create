@@ -25,7 +25,7 @@ create_access_token = auth_token.create_access_token
 refresh_access_token = auth_token.refresh_access_token
 SECRET_KEY = auth_token.SECRET_KEY
 ALGORITHM = auth_token.ALGORITHM
-ACCESS_TOKEN_EXPIRES_IN = timedelta(days=7)
+ACCESS_TOKEN_EXPIRES_IN = timedelta(minutes=15)
 REFRESH_TOKEN_EXPIRES_IN = timedelta(days=30)
 expire_time = datetime.utcnow() + ACCESS_TOKEN_EXPIRES_IN
 

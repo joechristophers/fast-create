@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast-create"  
-version = "0.1.8"  # Missing closing quote fixed
+version = "0.2.0"  # Missing closing quote fixed
 description = "A CLI tool to quickly generate FastAPI project structures"
 readme = "README.md"
 license = { text = "MIT" }

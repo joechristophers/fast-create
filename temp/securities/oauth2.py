@@ -13,7 +13,7 @@ from uuid import UUID
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
-def get_current_user_cookie(request: Request, db: Session = Depends(get_db)):
+def get_current_user_cookie(request: Request, response: Response, db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials", 
@@ -21,9 +21,10 @@ def get_current_user_cookie(request: Request, db: Session = Depends(get_db)):
     ) 
   
     token = request.cookies.get("access_token")
+    refresh_token = request.cookies.get("refresh_token")
     if not token:
         raise credentials_exception
-    token_data = verify_token(token)
+    token_data = verify_token(token=token, response=response, refreshToken=refresh_token)
     
     user = db.exec(select(User).where(User.id == UUID(token_data.user_id))).first()
     if not user:
@@ -33,14 +34,15 @@ def get_current_user_cookie(request: Request, db: Session = Depends(get_db)):
 
 
 
-def get_current_user_oauth(request: Request, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def get_current_user_oauth(response: Response, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials", 
         headers={"WWW-Authenticate": "Bearer"},
     ) 
  
-    token_data = verify_token(token)
+    token_data = verify_token(token=token, response=response)
+    
     
     user = db.exec(select(User).where(User.id == UUID(token_data.user_id))).first()
     if not user:
