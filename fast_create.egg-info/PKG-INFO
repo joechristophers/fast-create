@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: fast-create
-Version: 0.2.0
+Version: 0.2.1
 Summary: A CLI tool to quickly generate FastAPI project structures
 Author-email: Joseph Chukwuma Christopher <joechristophersc@email.com>
 License: MIT
@@ -8,6 +8,7 @@ Requires-Python: >=3.7
 Description-Content-Type: text/markdown
 Requires-Dist: fastapi[all]
 Requires-Dist: uvicorn
+Requires-Dist: alembic
 Requires-Dist: python-dotenv
 Requires-Dist: psycopg2-binary
 Requires-Dist: sqlmodel

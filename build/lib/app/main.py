@@ -1,11 +1,11 @@
 from app import app
 from starlette.middleware.sessions import SessionMiddleware 
 from routers import *
-from middleware import *
 from securities import authentication
 from models .UserModel import SQLModel
 import os
-from database import engine
+from database import engine, get_db
+from fastapi import Depends
 from routers import profile
 
 from dotenv import load_dotenv
