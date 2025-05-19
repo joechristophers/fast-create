@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="fast-create",
-    version="0.2.1",
+    version="0.2.2",
     packages=find_packages(),
     include_package_data=True,
     package_data={"": ["temp/**/*", "temp/*"]},  # Include all files in temp

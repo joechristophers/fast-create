@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, UTC
 from jose import JWTError, jwt, ExpiredSignatureError
 from fastapi import Depends, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer
@@ -30,8 +30,9 @@ class TokenData(BaseModel):
 
     
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
+    print(data.items)
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=7))
+    expire = datetime.now(UTC) + (expires_delta or timedelta(days=7))
     to_encode.update({"exp": expire})
     if "sub" not in to_encode:
         raise ValueError("The 'sub' field (username) must be included in the data.")
@@ -49,7 +50,7 @@ def refresh_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
     
     # Default to 35 days expiration for refresh tokens
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(days=35))
+    expire = datetime.now(UTC) + (expires_delta or timedelta(days=35))
     to_encode.update({"exp": expire})
     
     # Ensure the "sub" claim (subject) is included
@@ -78,7 +79,7 @@ def refresh_access_token(data: dict, expires_delta: timedelta | None = None):
 
 ACCESS_TOKEN_EXPIRES_IN = timedelta(minutes=7)
 REFRESH_TOKEN_EXPIRES_IN = timedelta(days=30)
-expire_time = datetime.utcnow() + ACCESS_TOKEN_EXPIRES_IN
+expire_time = datetime.now(UTC) + ACCESS_TOKEN_EXPIRES_IN
 
 from jose import jwt, JWTError, ExpiredSignatureError
 
